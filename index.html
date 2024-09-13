@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drug Inventory and Supply Chain Tracking System</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    
+</head>
+<body class="bg-gray-100 text-gray-900">
+    <!-- Header Section -->
+    <header class="header py-4 bg-white shadow-md flex justify-center items-center">
+        <img src="file:///Users/manishkumarjha/Work%20Projects/Medisure/Screenshot%202024-09-13%20at%2010.00.36%20PM.png" alt="Medisure Logo" class="h-12 w-auto mr-4">
+        <h1 class="text-3xl font-bold text-green-500">Medisure</h1>
+    </header>
+
+    <!-- Sidebar -->
+    <aside class="sidebar fixed top-0 left-0 w-64 bg-gray-800 h-full p-5 shadow-lg">
+        <h2 class="text-2xl font-bold text-green-500 mb-8">MediTrack</h2>
+        <nav>
+            <ul class="space-y-4">
+                <li><a id="dashboard-tab" class="tab text-white hover:bg-green-500 p-2 rounded-lg block">Dashboard</a></li>
+                <li><a id="inventory-tab" class="tab text-white hover:bg-green-500 p-2 rounded-lg block">Inventory</a></li>
+                <li><a id="reports-tab" class="tab text-white hover:bg-green-500 p-2 rounded-lg block">Reports</a></li>
+                <li><a id="settings-tab" class="tab text-white hover:bg-green-500 p-2 rounded-lg block">Settings</a></li>
+                <li><a id="logout-btn" class="text-red-500 hover:bg-red-600 p-2 rounded-lg block">Logout</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content ml-64 p-8 transition-all">
+        <!-- Dashboard Section -->
+        <section id="dashboard-section" class="section active">
+            <header class="flex justify-between items-center mb-8">
+                <h1 class="text-3xl font-semibold">Dashboard</h1>
+                <button id="add-drug-btn" class="bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-green-600 transition">Add New Drug</button>
+            </header>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-bold mb-4">Total Drugs</h2>
+                    <p class="text-2xl font-semibold text-green-500">150</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-bold mb-4">Out of Stock</h2>
+                    <p class="text-2xl font-semibold text-red-500">5</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-bold mb-4">Upcoming Expiries</h2>
+                    <p class="text-2xl font-semibold text-yellow-500">8</p>
+                </div>
+            </div>
+
+            <!-- Notice Board and Updates -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Notice Board -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-bold mb-4">Notice Board</h2>
+                    <ul id="notice-board" class="list-disc pl-5 space-y-2 text-gray-700">
+                        <!-- Dynamic notices will be added here -->
+                    </ul>
+                </div>
+
+                <!-- Latest Updates -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-bold mb-4">Latest Updates</h2>
+                    <ul id="updates-list" class="list-disc pl-5 space-y-2 text-gray-700">
+                        <!-- Dynamic updates will be added here -->
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Inventory Section -->
+        <section id="inventory-section" class="section hidden">
+            <h2 class="text-2xl font-bold mb-4">Drug Inventory</h2>
+            <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="py-3 px-4">Name</th>
+                        <th class="py-3 px-4">Quantity</th>
+                        <th class="py-3 px-4">Vendor</th>
+                        <th class="py-3 px-4">Expiration Date</th>
+                        <th class="py-3 px-4">Location</th>
+                        <th class="py-3 px-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="drug-table">
+                    <!-- Dynamic content will be inserted here -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Reports Section -->
+        <section id="reports-section" class="section hidden">
+            <h2 class="text-2xl font-bold mb-4">Reports</h2>
+            <canvas id="reportsChart" class="bg-white p-6 rounded-lg shadow-md"></canvas>
+        </section>
+
+        <!-- Settings Section -->
+        <section id="settings-section" class="section hidden">
+            <h2 class="text-2xl font-bold mb-4">Settings</h2>
+            <button id="toggle-theme" class="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-blue-600 transition">Toggle Dark Mode</button>
+        </section>
+    </main>
+
+    <!-- Add Drug Modal -->
+    <div id="drug-modal" class="modal hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div class="modal-content bg-white p-6 rounded-lg shadow-lg w-1/3">
+            <span id="close-modal" class="close-button absolute top-3 right-3 text-gray-600 cursor-pointer">&times;</span>
+            <h2 class="text-2xl font-bold mb-4">Add New Drug</h2>
+            <form id="drug-form" class="space-y-4">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Drug Name:</label>
+                    <input type="text" id="name" class="mt-1 block w-full p-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div>
+                    <label for="quantity" class="block text-sm font-medium text-gray-700">Quantity:</label>
+                    <input type="number" id="quantity" class="mt-1 block w-full p-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div>
+                    <label for="vendor" class="block text-sm font-medium text-gray-700">Vendor:</label>
+                    <input type="text" id="vendor" class="mt-1 block w-full p-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div>
+                    <label for="expirationDate" class="block text-sm font-medium text-gray-700">Expiration Date:</label>
+                    <input type="date" id="expirationDate" class="mt-1 block w-full p-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div>
+                    <label for="location" class="block text-sm font-medium text-gray-700">Location:</label>
+                    <input type="text" id="location" class="mt-1 block w-full p-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-green-600 transition w-full">Add Drug</button>
+            </form>
+        </div>
+    </div>
+    <div id="chat-button">
+        <span>Chat with Us</span>
+      </div>
+      
+      <div id="chat-box">
+        <div id="chat-header">
+          <span>Live Chat</span>
+          <button id="close-chat">X</button>
+        </div>
+        <div id="chat-content">
+          <!-- Chat content goes here -->
+        </div>
+        <input type="text" id="chat-input" placeholder="Type your message..." />
+      </div>
+      
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
+
+
+
+
+
